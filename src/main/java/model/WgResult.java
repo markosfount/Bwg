@@ -4,8 +4,12 @@ import lombok.Builder;
 
 @Builder
 public class WgResult {
-    private String extId;
-    private String price;
-    private String size;
+    private String name;
+    private Long extId;
+    private double price;
+    private double size;
+    private Integer flatmates;
+    private Integer women;
+    private Integer men;
 
 }
