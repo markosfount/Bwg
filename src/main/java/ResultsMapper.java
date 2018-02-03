@@ -13,14 +13,17 @@ public class ResultsMapper {
     private static final Pattern EURO = Pattern.compile("€", Pattern.LITERAL);
     private static final Pattern NAME_TRAIL = Pattern.compile("\\.\\d+.*");
     private static final Pattern DASH = Pattern.compile("-", Pattern.LITERAL);
-    private static final Pattern WOM = Pattern.compile("\\dw");
-    private static final Pattern MEN = Pattern.compile("\\dm");
+    private static final Pattern WOMEN_PAT = Pattern.compile("\\dw");
+    private static final Pattern MEN_PAT = Pattern.compile("\\dm");
     private static final String LIST_DETAILS = "liste-details-ad-";
     private static final String SIZE_PRICE_SPLIT = "m² - ";
     private static final String ID = "id";
     private static final String SIZE_PRICE_WR = ".detail-size-price-wrapper";
     private static final String DETAIL_VIEW = ".detailansicht";
     private static final String ER = "er";
+    private static final String TOTAL_NO = "total";
+    private static final String WOMEN_NO = "women";
+    private static final String MEN_NO = "men";
 
     public List<WgResult> mapResults(List<Element> elements) {
         // FIXME return directly
@@ -35,19 +38,23 @@ public class ResultsMapper {
 
         Element details = getDetails(element);
         String[] sizeAndPrice = getSizePrice(details);
-        Map<String, Integer> flatMateInfo = getFlatmateNumbers(element);
+        Map<String, Integer> flatMateInfo = getFlatmateInfo(element);
 
         String properName = element.select(".headline").select(".detailansicht").first().text();
 
         //TODO add + parse date ( .tausch_rent_by_day_hide )
         String textAndDate = element.select("p").not(".list-details-image-wrapper").text();
-        return WgResult.builder()
+        WgResult wgResult = WgResult.builder()
                 .extId(getExtId(element))
                 .name(getName(details))
                 .size(getSize(sizeAndPrice))
                 .price(getPrice(sizeAndPrice))
-//                .flatmates(getFlatmateNumbers(flatMateInfo))
+                .flatmates(flatMateInfo.get(TOTAL_NO))
+                .women(flatMateInfo.get(WOMEN_NO))
+                .men(flatMateInfo.get(MEN_NO))
                 .build();
+
+        return wgResult;
     }
 
     private Long getExtId(Element element) {
@@ -74,12 +81,18 @@ public class ResultsMapper {
         return Double.valueOf(sizeAndPrice[0]);
     }
 
-    private Map<String, Integer> getFlatmateNumbers(Element element) {
+    private Map<String, Integer> getFlatmateInfo(Element element) {
         String flatMateInfo = element.select("h3").select("span").attr("title");
         Map<String, Integer> flatMates = new HashMap<>();
-//        flatMates.put("total", Integer.valueOf(flatMateInfo.split(ER)[0]));
-//        flatMates.put("women", Integer.valueOf(WOM.matcher(flatMateInfo).group()));
-//        flatMates.put("men", Integer.valueOf(WOM.matcher(flatMateInfo).group()));
+        flatMates.put(TOTAL_NO, Integer.valueOf(flatMateInfo.split(ER)[0]));
+        Matcher matcher = WOMEN_PAT.matcher(flatMateInfo);
+        if (matcher.find()) {
+            flatMates.put(WOMEN_NO, Integer.valueOf(matcher.group(0).replaceAll("w", "")));
+        }
+        matcher = MEN_PAT.matcher(flatMateInfo);
+        if (matcher.find()) {
+            flatMates.put(MEN_NO, Integer.valueOf(matcher.group(0).replaceAll("m", "")));
+        }
 
         return flatMates;
     }
