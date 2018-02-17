@@ -1,6 +1,9 @@
+import model.Availability;
 import model.WgResult;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +18,9 @@ public class ResultsMapper {
     private static final Pattern DASH = Pattern.compile("-", Pattern.LITERAL);
     private static final Pattern WOMEN_PAT = Pattern.compile("\\dw");
     private static final Pattern MEN_PAT = Pattern.compile("\\dm");
+    private static final Pattern DATE_SPLIT = Pattern.compile(" Verfügbar: ab ");
+    private static final Pattern DATE_SPLIT_SHORT = Pattern.compile(" Verfügbar: ");
+    private static final Pattern INTERVAL_SPLIT = Pattern.compile(" - ");
     private static final String LIST_DETAILS = "liste-details-ad-";
     private static final String SIZE_PRICE_SPLIT = "m² - ";
     private static final String ID = "id";
@@ -40,13 +46,18 @@ public class ResultsMapper {
         String[] sizeAndPrice = getSizePrice(details);
         Map<String, Integer> flatMateInfo = getFlatmateInfo(element);
 
-        String properName = element.select(".headline").select(".detailansicht").first().text();
+        String description = element.select(".headline").select(".detailansicht").first().text();
 
-        //TODO add + parse date ( .tausch_rent_by_day_hide )
-        String textAndDate = element.select("p").not(".list-details-image-wrapper").text();
+        Pair<String, Availability> availabilityPair = parseDatesAvailable(element);
+
         WgResult wgResult = WgResult.builder()
                 .extId(getExtId(element))
                 .name(getName(details))
+                .description(description)
+                .text(availabilityPair.getLeft())
+                .availableFrom(availabilityPair.getRight().getAvailableFrom())
+                .availableTo(availabilityPair.getRight().getAvailableTo())
+                .isLongTerm(availabilityPair.getRight().isLongTerm())
                 .size(getSize(sizeAndPrice))
                 .price(getPrice(sizeAndPrice))
                 .flatmates(flatMateInfo.get(TOTAL_NO))
@@ -55,6 +66,21 @@ public class ResultsMapper {
                 .build();
 
         return wgResult;
+    }
+
+    private Pair<String, Availability> parseDatesAvailable(Element element) {
+        String textToSplit = element.select("p").not(".list-details-image-wrapper").text();
+        boolean isLongTerm = DATE_SPLIT.matcher(textToSplit).find();
+        String[] textParts = isLongTerm ? DATE_SPLIT.split(textToSplit) : DATE_SPLIT_SHORT.split(textToSplit);
+        String text = textParts[0];
+        String[] interval = INTERVAL_SPLIT.split(textParts[1]);
+
+        Availability availability = Availability.builder()
+                .availableFrom(isLongTerm ? parseDate(textParts[1]) : parseDate(interval[0]))
+                .availableTo(isLongTerm ? null : parseDate(interval[1]))
+                .build();
+
+        return Pair.of(text, availability);
     }
 
     private Long getExtId(Element element) {
@@ -95,6 +121,12 @@ public class ResultsMapper {
         }
 
         return flatMates;
+    }
+
+    private Date parseDate(String date) {
+        String[] dateNums = Pattern.compile(".", Pattern.LITERAL).split(date);
+        // FIXME replace deprecated date format
+        return new Date(Integer.valueOf(dateNums[2]) + 100, Integer.valueOf(dateNums[1]) -1, Integer.valueOf(dateNums[0]));
     }
 
 }
