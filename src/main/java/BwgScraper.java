@@ -15,9 +15,8 @@ public class BwgScraper {
 
     public String getResponse() {
         HttpClient client = HttpClientBuilder.create().build();
-//        HttpContext context = new HttpClientContext();
         HttpGet getRequest = new HttpGet(url);
-//        getRequest.addHeader("User-Agent", USER_AGENT);
+        getRequest.addHeader("User-Agent", USER_AGENT);
 
         String response = null;
         // add logging

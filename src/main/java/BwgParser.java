@@ -5,11 +5,12 @@ public class BwgParser {
     private ResponseParser parser;
 
     public BwgParser() {
-        this.scraper = new BwgScraper();
+        scraper = new BwgScraper();
     }
 
     public void parse() {
         String response = scraper.getResponse();
+        parser.parseResponse(response);
     }
 
 

@@ -21,6 +21,7 @@ public class ResultsMapper {
     private static final Pattern DATE_SPLIT = Pattern.compile(" Verfügbar: ab ");
     private static final Pattern DATE_SPLIT_SHORT = Pattern.compile(" Verfügbar: ");
     private static final Pattern INTERVAL_SPLIT = Pattern.compile(" - ");
+    private static final Pattern LOCATION_PAT = Pattern.compile(" [a-zA-Z]+,");
     private static final String LIST_DETAILS = "liste-details-ad-";
     private static final String SIZE_PRICE_SPLIT = "m² - ";
     private static final String ID = "id";
@@ -30,6 +31,7 @@ public class ResultsMapper {
     private static final String TOTAL_NO = "total";
     private static final String WOMEN_NO = "women";
     private static final String MEN_NO = "men";
+    private static final Pattern COMMA_PAT = Pattern.compile(",");
 
     public List<WgResult> mapResults(List<Element> elements) {
         // FIXME return directly
@@ -49,6 +51,8 @@ public class ResultsMapper {
         String description = element.select(".headline").select(".detailansicht").first().text();
 
         Pair<String, Availability> availabilityPair = parseDatesAvailable(element);
+        String location = getLocation(availabilityPair.getLeft());
+
 
         WgResult wgResult = WgResult.builder()
                 .extId(getExtId(element))
@@ -63,10 +67,12 @@ public class ResultsMapper {
                 .flatmates(flatMateInfo.get(TOTAL_NO))
                 .women(flatMateInfo.get(WOMEN_NO))
                 .men(flatMateInfo.get(MEN_NO))
+                .location(location)
                 .build();
 
         return wgResult;
     }
+
 
     private Pair<String, Availability> parseDatesAvailable(Element element) {
         String textToSplit = element.select("p").not(".list-details-image-wrapper").text();
@@ -127,6 +133,12 @@ public class ResultsMapper {
         String[] dateNums = Pattern.compile(".", Pattern.LITERAL).split(date);
         // FIXME replace deprecated date format
         return new Date(Integer.valueOf(dateNums[2]) + 100, Integer.valueOf(dateNums[1]) -1, Integer.valueOf(dateNums[0]));
+    }
+
+    private String getLocation(String text) {
+        Matcher matcher = LOCATION_PAT.matcher(text);
+        
+        return matcher.find() ? COMMA_PAT.matcher(matcher.group(0)).replaceAll("") : "";
     }
 
 }
