@@ -1,3 +1,9 @@
+package com.bwgproject.parser;
+
+import com.bwgproject.parser.model.WgResult;
+
+import java.util.List;
+
 //@Log4j2
 public class BwgParser {
 
@@ -6,11 +12,13 @@ public class BwgParser {
 
     public BwgParser() {
         scraper = new BwgScraper();
+        parser = new ResponseParser();
     }
 
     public void parse() {
         String response = scraper.getResponse();
-        parser.parseResponse(response);
+        List<WgResult> results = parser.parseResponse(response);
+
     }
 
 

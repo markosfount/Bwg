@@ -1,5 +1,7 @@
-import model.Availability;
-import model.WgResult;
+package com.bwgproject.parser;
+
+import com.bwgproject.parser.model.Availability;
+import com.bwgproject.parser.model.WgResult;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 

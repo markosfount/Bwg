@@ -1,4 +1,6 @@
-import model.WgResult;
+package com.bwgproject.parser;
+
+import com.bwgproject.parser.model.WgResult;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
