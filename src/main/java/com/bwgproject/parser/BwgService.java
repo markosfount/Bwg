@@ -5,20 +5,21 @@ import com.bwgproject.parser.model.WgResult;
 import java.util.List;
 
 //@Log4j2
-public class BwgParser {
+public class BwgService {
 
     private BwgScraper scraper;
     private ResponseParser parser;
 
-    public BwgParser() {
+    public BwgService() {
         scraper = new BwgScraper();
         parser = new ResponseParser();
     }
 
-    public void parse() {
+    public List<WgResult> getResults() {
         String response = scraper.getResponse();
         List<WgResult> results = parser.parseResponse(response);
 
+        return results;
     }
 
 

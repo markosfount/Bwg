@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Builder
 @Getter
-public class Availability {
+public class DateAvailability {
     private Date availableFrom;
     private Date availableTo;
 
