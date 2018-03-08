@@ -1,6 +1,6 @@
 package com.bwgproject.parser;
 
-import com.bwgproject.parser.model.WgResult;
+import com.bwgproject.model.WgResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

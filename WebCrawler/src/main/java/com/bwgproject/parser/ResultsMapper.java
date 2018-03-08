@@ -1,7 +1,7 @@
 package com.bwgproject.parser;
 
+import com.bwgproject.model.WgResult;
 import com.bwgproject.parser.model.DateAvailability;
-import com.bwgproject.parser.model.WgResult;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;

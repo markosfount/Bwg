@@ -1,6 +1,6 @@
 package com.bwgproject.parser;
 
-import com.bwgproject.parser.model.WgResult;
+import com.bwgproject.model.WgResult;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
