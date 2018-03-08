@@ -1,4 +1,4 @@
-package com.bwgproject.parser.model;
+package com.bwgproject.model;
 
 import lombok.Builder;
 

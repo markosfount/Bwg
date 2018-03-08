@@ -1,9 +1,10 @@
-package com.bwgparser.dataservice.controller;
+package com.bwgproject.dataservice.controller;
 
-import com.bwgproject.parser.model.WgResult;
+import com.bwgproject.model.WgResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 public class DataServiceController {

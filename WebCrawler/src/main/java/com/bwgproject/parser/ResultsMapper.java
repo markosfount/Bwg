@@ -1,7 +1,8 @@
 package com.bwgproject.parser;
 
-import com.bwgproject.parser.model.Availability;
-import com.bwgproject.parser.model.WgResult;
+import com.bwgproject.model.WgResult;
+import com.bwgproject.parser.model.DateAvailability;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 
@@ -44,7 +45,8 @@ public class ResultsMapper {
         return wgResults;
     }
 
-    private WgResult mapResult(Element element) {
+    @VisibleForTesting
+    public WgResult mapResult(Element element) {
 
         Element details = getDetails(element);
         String[] sizeAndPrice = getSizePrice(details);
@@ -52,7 +54,7 @@ public class ResultsMapper {
 
         String description = element.select(".headline").select(".detailansicht").first().text();
 
-        Pair<String, Availability> availabilityPair = parseDatesAvailable(element);
+        Pair<String, DateAvailability> availabilityPair = parseDatesAvailable(element);
         String location = getLocation(availabilityPair.getLeft());
 
 
@@ -76,14 +78,14 @@ public class ResultsMapper {
     }
 
 
-    private Pair<String, Availability> parseDatesAvailable(Element element) {
+    private Pair<String, DateAvailability> parseDatesAvailable(Element element) {
         String textToSplit = element.select("p").not(".list-details-image-wrapper").text();
         boolean isLongTerm = DATE_SPLIT.matcher(textToSplit).find();
         String[] textParts = isLongTerm ? DATE_SPLIT.split(textToSplit) : DATE_SPLIT_SHORT.split(textToSplit);
         String text = textParts[0];
         String[] interval = INTERVAL_SPLIT.split(textParts[1]);
 
-        Availability availability = Availability.builder()
+        DateAvailability availability = DateAvailability.builder()
                 .availableFrom(isLongTerm ? parseDate(textParts[1]) : parseDate(interval[0]))
                 .availableTo(isLongTerm ? null : parseDate(interval[1]))
                 .build();
