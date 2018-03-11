@@ -5,7 +5,9 @@ import com.bwgproject.parser.model.DateAvailability;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
+import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,27 +16,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ResultsMapper {
+import static com.bwgproject.parser.Constants.*;
 
-    private static final Pattern EURO = Pattern.compile("€", Pattern.LITERAL);
-    private static final Pattern NAME_TRAIL = Pattern.compile("\\.\\d+.*");
-    private static final Pattern DASH = Pattern.compile("-", Pattern.LITERAL);
-    private static final Pattern WOMEN_PAT = Pattern.compile("\\dw");
-    private static final Pattern MEN_PAT = Pattern.compile("\\dm");
-    private static final Pattern DATE_SPLIT = Pattern.compile(" Verfügbar: ab ");
-    private static final Pattern DATE_SPLIT_SHORT = Pattern.compile(" Verfügbar: ");
-    private static final Pattern INTERVAL_SPLIT = Pattern.compile(" - ");
-    private static final Pattern LOCATION_PAT = Pattern.compile(" [a-zA-Z]+,");
-    private static final String LIST_DETAILS = "liste-details-ad-";
-    private static final String SIZE_PRICE_SPLIT = "m² - ";
-    private static final String ID = "id";
-    private static final String SIZE_PRICE_WR = ".detail-size-price-wrapper";
-    private static final String DETAIL_VIEW = ".detailansicht";
-    private static final String ER = "er";
-    private static final String TOTAL_NO = "total";
-    private static final String WOMEN_NO = "women";
-    private static final String MEN_NO = "men";
-    private static final Pattern COMMA_PAT = Pattern.compile(",");
+@Component
+public class ResultsMapper {
 
     public List<WgResult> mapResults(List<Element> elements) {
         // FIXME return directly
@@ -52,7 +37,10 @@ public class ResultsMapper {
         String[] sizeAndPrice = getSizePrice(details);
         Map<String, Integer> flatMateInfo = getFlatmateInfo(element);
 
-        String description = element.select(".headline").select(".detailansicht").first().text();
+        // FIXME
+        LocalDateTime dateOfPosting = getDateOfPosting(element);
+
+        String description = getDescription(element);
 
         Pair<String, DateAvailability> availabilityPair = parseDatesAvailable(element);
         String location = getLocation(availabilityPair.getLeft());
@@ -77,6 +65,42 @@ public class ResultsMapper {
         return wgResult;
     }
 
+    private Element getDetails(Element element) {
+        return element.select(SIZE_PRICE_WR).select(DETAIL_VIEW).first();
+    }
+
+    private String[] getSizePrice(Element element) {
+        return SIZE_PRICE_SPLIT.split(element.text());
+    }
+
+    private Map<String, Integer> getFlatmateInfo(Element element) {
+        String flatMateInfo = element.select("h3").select("span").attr("title");
+        Map<String, Integer> flatMates = new HashMap<>();
+        flatMates.put(TOTAL_NO, Integer.valueOf(ER.split(flatMateInfo)[0]));
+        Matcher matcher = WOMEN_PAT.matcher(flatMateInfo);
+        if (matcher.find()) {
+            flatMates.put(WOMEN_NO, Integer.valueOf(W.matcher(matcher.group(0)).replaceAll("")));
+        }
+        matcher = MEN_PAT.matcher(flatMateInfo);
+        if (matcher.find()) {
+            flatMates.put(MEN_NO, Integer.valueOf(M.matcher(matcher.group(0)).replaceAll("")));
+        }
+
+        return flatMates;
+    }
+
+    // FIXME replace Date by LocalDateTime
+    private LocalDateTime getDateOfPosting(Element element) {
+        String timeOnline = element.getElementsMatchingOwnText("Online").text();
+        if (MINUTES.matcher(timeOnline).find()) {
+            return LocalDateTime.now().minusMinutes(0);
+        }
+        return LocalDateTime.now();
+    }
+
+    private String getDescription(Element element) {
+        return element.select(".headline").select(".detailansicht").first().text();
+    }
 
     private Pair<String, DateAvailability> parseDatesAvailable(Element element) {
         String textToSplit = element.select("p").not(".list-details-image-wrapper").text();
@@ -93,46 +117,6 @@ public class ResultsMapper {
         return Pair.of(text, availability);
     }
 
-    private Long getExtId(Element element) {
-        return Long.valueOf(element.attr(ID).split(LIST_DETAILS)[1]);
-    }
-
-    private Element getDetails(Element element) {
-        return element.select(SIZE_PRICE_WR).select(DETAIL_VIEW).first();
-    }
-
-    private String getName(Element element) {
-        return DASH.matcher(NAME_TRAIL.matcher(element.attr("href")).replaceAll(Matcher.quoteReplacement(""))).replaceAll(" ");
-    }
-
-    private String[] getSizePrice(Element element) {
-        return element.text().split(SIZE_PRICE_SPLIT);
-    }
-
-    private Double getPrice(String... sizeAndPrice) {
-        return Double.valueOf(EURO.matcher(sizeAndPrice[1]).replaceAll(Matcher.quoteReplacement("")));
-    }
-
-    private Double getSize(String... sizeAndPrice) {
-        return Double.valueOf(sizeAndPrice[0]);
-    }
-
-    private Map<String, Integer> getFlatmateInfo(Element element) {
-        String flatMateInfo = element.select("h3").select("span").attr("title");
-        Map<String, Integer> flatMates = new HashMap<>();
-        flatMates.put(TOTAL_NO, Integer.valueOf(flatMateInfo.split(ER)[0]));
-        Matcher matcher = WOMEN_PAT.matcher(flatMateInfo);
-        if (matcher.find()) {
-            flatMates.put(WOMEN_NO, Integer.valueOf(matcher.group(0).replaceAll("w", "")));
-        }
-        matcher = MEN_PAT.matcher(flatMateInfo);
-        if (matcher.find()) {
-            flatMates.put(MEN_NO, Integer.valueOf(matcher.group(0).replaceAll("m", "")));
-        }
-
-        return flatMates;
-    }
-
     private Date parseDate(String date) {
         String[] dateNums = Pattern.compile(".", Pattern.LITERAL).split(date);
         // FIXME replace deprecated date format
@@ -141,8 +125,24 @@ public class ResultsMapper {
 
     private String getLocation(String text) {
         Matcher matcher = LOCATION_PAT.matcher(text);
-        
+
         return matcher.find() ? COMMA_PAT.matcher(matcher.group(0)).replaceAll("") : "";
+    }
+
+    private Long getExtId(Element element) {
+        return Long.valueOf(LIST_DETAILS.split(element.attr(ID))[1]);
+    }
+
+    private String getName(Element element) {
+        return DASH.matcher(NAME_TRAIL.matcher(element.attr("href")).replaceAll(Matcher.quoteReplacement(""))).replaceAll(" ");
+    }
+
+    private Double getSize(String... sizeAndPrice) {
+        return Double.valueOf(sizeAndPrice[0]);
+    }
+
+    private Double getPrice(String... sizeAndPrice) {
+        return Double.valueOf(EURO.matcher(sizeAndPrice[1]).replaceAll(Matcher.quoteReplacement("")));
     }
 
 }

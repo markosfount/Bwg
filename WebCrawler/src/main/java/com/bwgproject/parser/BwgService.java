@@ -29,7 +29,6 @@ public class BwgService {
     }
 
     private String mapToRequest(List<WgResult> results) {
-
         String request = serializer.serialize(results);
         return request;
     }

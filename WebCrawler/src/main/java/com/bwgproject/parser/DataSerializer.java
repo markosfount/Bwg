@@ -1,11 +1,12 @@
 package com.bwgproject.parser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
-
+@Component
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 public class DataSerializer {
 

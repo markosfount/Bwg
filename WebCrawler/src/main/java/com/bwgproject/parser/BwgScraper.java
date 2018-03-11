@@ -7,9 +7,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Component
 public class BwgScraper {
     private static final String url = "http://www.wg-gesucht.de/wg-zimmer-in-Berlin.8.0.1.0.html";
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)";

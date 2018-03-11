@@ -1,11 +1,13 @@
 package com.bwgproject.model;
 
 import lombok.Builder;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Builder
+@Data
 public class WgResult implements Serializable {
     private String name;
     private String description;
