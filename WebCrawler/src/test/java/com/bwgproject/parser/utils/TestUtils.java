@@ -6,9 +6,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestUtils {
@@ -21,8 +23,22 @@ public final class TestUtils {
     }
 
     public static String getScrapedContent() throws Exception {
-        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response.html").toURI())));
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response.html").toURI())), Charset.defaultCharset());
         return response;
     }
 
+    public static String getScrapedContentMini() throws Exception {
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response_mini.html").toURI())), Charset.defaultCharset());
+        return response;
+    }
+
+    public static String getDataRequest() throws Exception {
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("data_request.json").toURI())), Charset.defaultCharset());
+        return response;
+    }
+
+    public static String getDataRequestMini() throws Exception {
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("data_request_mini.json").toURI())), Charset.defaultCharset());
+        return response;
+    }
 }

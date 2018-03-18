@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
@@ -20,7 +21,9 @@ public class ResponseParser {
         Document document = Jsoup.parse(response);
         List<Element> elements = document.select("div[id~=liste-details-ad-\\d+]");
 
-        return resultsMapper.mapResults(elements);
+        return elements.stream()
+                .map(resultsMapper::mapResult)
+                .collect(Collectors.toList());
     }
 
 }

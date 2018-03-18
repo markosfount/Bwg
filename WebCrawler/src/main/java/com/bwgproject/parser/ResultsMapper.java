@@ -21,15 +21,6 @@ import static com.bwgproject.parser.Constants.*;
 @Component
 public class ResultsMapper {
 
-    public List<WgResult> mapResults(List<Element> elements) {
-        // FIXME return directly
-        List<WgResult> wgResults = elements.stream()
-                .map(this::mapResult)
-                .collect(Collectors.toList());
-
-        return wgResults;
-    }
-
     @VisibleForTesting
     public WgResult mapResult(Element element) {
 

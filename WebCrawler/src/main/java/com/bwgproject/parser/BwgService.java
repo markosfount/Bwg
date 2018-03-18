@@ -14,11 +14,15 @@ public class BwgService {
     private final BwgScraper scraper;
     private final ResponseParser parser;
     private final DataSerializer serializer;
+    private final DataServiceCaller dataServiceCaller;
 
     public void run() {
         List<WgResult> results = getResults();
 
         String request = mapToRequest(results);
+
+        dataServiceCaller.sendRequest(request);
+
     }
 
     private List<WgResult> getResults() {

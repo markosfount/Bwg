@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DataServiceController {
 
-    @PostMapping(path = "/data", consumes = "application/json")
-    public String insertData(@RequestBody WgResult wgResult) {
-        System.out.println(wgResult);
+    @PostMapping(path = "/data", consumes = "application/json;charset=UTF-8"  )
+    public String insertData(@RequestBody WgResult... wgResults) {
+        System.out.println(wgResults);
         return "data inserted \n";
     }
 
