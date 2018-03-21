@@ -4,17 +4,16 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
 public class WgResult implements Serializable {
-    private String name;
     private String description;
     private String text;
-    private Date dateOfPosting;
-    private Date availableFrom;
-    private Date availableTo;
+    private LocalDateTime dateOfPosting;
+    private LocalDateTime availableFrom;
+    private LocalDateTime availableTo;
     private Boolean isLongTerm;
     private Long extId;
     private double price;

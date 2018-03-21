@@ -7,16 +7,37 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static com.bwgproject.parser.Constants.*;
+import static com.bwgproject.parser.Constants.ANINT;
+import static com.bwgproject.parser.Constants.BERLIN;
+import static com.bwgproject.parser.Constants.DATE_SPLIT_SHORT;
+import static com.bwgproject.parser.Constants.DAYS;
+import static com.bwgproject.parser.Constants.DETAIL_VIEW;
+import static com.bwgproject.parser.Constants.DOT;
+import static com.bwgproject.parser.Constants.ER;
+import static com.bwgproject.parser.Constants.EURO;
+import static com.bwgproject.parser.Constants.HOURS;
+import static com.bwgproject.parser.Constants.ID;
+import static com.bwgproject.parser.Constants.INTERVAL_SPLIT;
+import static com.bwgproject.parser.Constants.LIST_DETAILS;
+import static com.bwgproject.parser.Constants.M;
+import static com.bwgproject.parser.Constants.MEN_NO;
+import static com.bwgproject.parser.Constants.MEN_PAT;
+import static com.bwgproject.parser.Constants.MINUTES;
+import static com.bwgproject.parser.Constants.NAME_TRAIL;
+import static com.bwgproject.parser.Constants.ONLINE;
+import static com.bwgproject.parser.Constants.SIZE_PRICE_SPLIT;
+import static com.bwgproject.parser.Constants.SIZE_PRICE_WR;
+import static com.bwgproject.parser.Constants.TOTAL_NO;
+import static com.bwgproject.parser.Constants.W;
+import static com.bwgproject.parser.Constants.WOMEN_NO;
+import static com.bwgproject.parser.Constants.WOMEN_PAT;
 
 @Component
 public class ResultsMapper {
@@ -25,25 +46,25 @@ public class ResultsMapper {
     public WgResult mapResult(Element element) {
 
         Element details = getDetails(element);
+        String location = getLocation(details);
+
         String[] sizeAndPrice = getSizePrice(details);
         Map<String, Integer> flatMateInfo = getFlatmateInfo(element);
 
-        // FIXME
         LocalDateTime dateOfPosting = getDateOfPosting(element);
 
         String description = getDescription(element);
 
         Pair<String, DateAvailability> availabilityPair = parseDatesAvailable(element);
-        String location = getLocation(availabilityPair.getLeft());
 
 
         WgResult wgResult = WgResult.builder()
                 .extId(getExtId(element))
-                .name(getName(details))
                 .description(description)
                 .text(availabilityPair.getLeft())
                 .availableFrom(availabilityPair.getRight().getAvailableFrom())
                 .availableTo(availabilityPair.getRight().getAvailableTo())
+                .dateOfPosting(dateOfPosting)
                 .isLongTerm(availabilityPair.getRight().isLongTerm())
                 .size(getSize(sizeAndPrice))
                 .price(getPrice(sizeAndPrice))
@@ -80,13 +101,33 @@ public class ResultsMapper {
         return flatMates;
     }
 
-    // FIXME replace Date by LocalDateTime
     private LocalDateTime getDateOfPosting(Element element) {
         String timeOnline = element.getElementsMatchingOwnText("Online").text();
-        if (MINUTES.matcher(timeOnline).find()) {
-            return LocalDateTime.now().minusMinutes(0);
+        long amount = 0;
+        Matcher matcher = ANINT.matcher(timeOnline);
+        if (matcher.find()) {
+            amount = Long.valueOf(matcher.group());
         }
-        return LocalDateTime.now();
+
+        if (MINUTES.matcher(timeOnline).find()) {
+            return LocalDateTime.now().minusMinutes(amount);
+        } else if (HOURS.matcher(timeOnline).find()) {
+            return LocalDateTime.now().minusHours(amount);
+        } else if (DAYS.matcher(timeOnline).find()) {
+            return LocalDateTime.now().minusDays(amount);
+        }
+
+        return getDateTime(timeOnline);
+    }
+
+    private LocalDateTime getDateTime(String timeOnline) {
+        String dateString = ONLINE.matcher(timeOnline).replaceAll("");
+        return getDateTimeFromString(dateString);
+    }
+
+    private LocalDateTime getDateTimeFromString(String dateString) {
+        String formattedDate = DOT.matcher(dateString).replaceAll("-");
+        return LocalDate.parse(formattedDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay();
     }
 
     private String getDescription(Element element) {
@@ -95,37 +136,25 @@ public class ResultsMapper {
 
     private Pair<String, DateAvailability> parseDatesAvailable(Element element) {
         String textToSplit = element.select("p").not(".list-details-image-wrapper").text();
-        boolean isLongTerm = DATE_SPLIT.matcher(textToSplit).find();
-        String[] textParts = isLongTerm ? DATE_SPLIT.split(textToSplit) : DATE_SPLIT_SHORT.split(textToSplit);
+        boolean isShortTerm = INTERVAL_SPLIT.matcher(textToSplit).find();
+        String[] textParts = DATE_SPLIT_SHORT.split(textToSplit);
         String text = textParts[0];
         String[] interval = INTERVAL_SPLIT.split(textParts[1]);
 
         DateAvailability availability = DateAvailability.builder()
-                .availableFrom(isLongTerm ? parseDate(textParts[1]) : parseDate(interval[0]))
-                .availableTo(isLongTerm ? null : parseDate(interval[1]))
+                .availableFrom(isShortTerm ? getDateTimeFromString(interval[0]) : getDateTimeFromString(textParts[1]))
+                .availableTo(isShortTerm ? getDateTimeFromString(interval[1]) : null)
                 .build();
 
         return Pair.of(text, availability);
-    }
-
-    private Date parseDate(String date) {
-        String[] dateNums = Pattern.compile(".", Pattern.LITERAL).split(date);
-        // FIXME replace deprecated date format
-        return new Date(Integer.valueOf(dateNums[2]) + 100, Integer.valueOf(dateNums[1]) -1, Integer.valueOf(dateNums[0]));
-    }
-
-    private String getLocation(String text) {
-        Matcher matcher = LOCATION_PAT.matcher(text);
-
-        return matcher.find() ? COMMA_PAT.matcher(matcher.group(0)).replaceAll("") : "";
     }
 
     private Long getExtId(Element element) {
         return Long.valueOf(LIST_DETAILS.split(element.attr(ID))[1]);
     }
 
-    private String getName(Element element) {
-        return DASH.matcher(NAME_TRAIL.matcher(element.attr("href")).replaceAll(Matcher.quoteReplacement(""))).replaceAll(" ");
+    private String getLocation(Element element) {
+        return BERLIN.matcher(NAME_TRAIL.matcher(element.attr("href")).replaceAll("")).replaceAll("");
     }
 
     private Double getSize(String... sizeAndPrice) {
