@@ -24,7 +24,7 @@ public class BwgServiceTest {
     private ResponseParser parser = new ResponseParser(new ResultsMapper());
 
     @Spy
-    private DataSerializer serializer = new DataSerializer(new ObjectMapper());
+    private DataSerializer serializer = new DataSerializer(new ObjectMapper().findAndRegisterModules());
 
     @Spy
     private DataServiceCaller dataServiceCaller = new DataServiceCaller(new RestTemplate());
