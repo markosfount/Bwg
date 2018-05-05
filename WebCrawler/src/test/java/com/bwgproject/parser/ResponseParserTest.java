@@ -1,10 +1,9 @@
 package com.bwgproject.parser;
 
 import com.bwgproject.model.WgResult;
+import com.bwgproject.parser.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 class ResponseParserTest {
@@ -12,9 +11,16 @@ class ResponseParserTest {
     private ResponseParser responseParser = new ResponseParser(new ResultsMapper());
 
     @Test
-    public void shouldParseRespones() throws Exception{
+    public void shouldParseResponse() throws Exception{
 
-        String response = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource("response2.html").toURI())));
+        String response = TestUtils.getScrapedContent();
+        List<WgResult> wgResults = responseParser.parseResponse(response);
+    }
+
+    @Test
+    public void shouldParseResponseTest() throws Exception{
+
+        String response = TestUtils.getScrapedContent("response_test_new.html");
         List<WgResult> wgResults = responseParser.parseResponse(response);
     }
 

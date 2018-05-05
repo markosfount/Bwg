@@ -16,7 +16,7 @@ import java.net.URI;
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 public class DataServiceCaller {
 
-    private static final String DATA_SERVICE = "http://localhost:8080/data";
+    private static final String DATA_SERVICE = "http://localhost:8080/dataService/addRecords";
     private final RestTemplate restTemplate;
 
     public void sendRequest(String request) {

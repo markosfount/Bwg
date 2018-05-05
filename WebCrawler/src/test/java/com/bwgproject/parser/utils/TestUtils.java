@@ -22,7 +22,19 @@ public final class TestUtils {
 
     }
 
+    public static List<Element> getElements(String filename) throws Exception {
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource(filename).toURI())));
+        Document document = Jsoup.parse(response);
+        return document.select("div[id~=liste-details-ad-\\d+]");
+
+    }
+
     public static String getScrapedContent() throws Exception {
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response2.html").toURI())), Charset.defaultCharset());
+        return response;
+    }
+
+    public static String getScrapedContent(String filename) throws Exception {
         String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response2.html").toURI())), Charset.defaultCharset());
         return response;
     }

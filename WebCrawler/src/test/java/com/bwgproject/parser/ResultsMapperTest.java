@@ -17,4 +17,10 @@ class ResultsMapperTest {
         WgResult wgResult = resultsMapper.mapResult(elements.get(0));
     }
 
+    @Test
+    public void shouldMapResultWithTestResponse() throws Exception {
+        List<Element> elements = TestUtils.getElements("response_test_new.html");
+        WgResult wgResult = resultsMapper.mapResult(elements.get(0));
+    }
+
 }

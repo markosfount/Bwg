@@ -20,9 +20,9 @@ public final class Constants {
     public static final String TOTAL_NO = "total";
     public static final String WOMEN_NO = "women";
     public static final String MEN_NO = "men";
-    public static final Pattern MINUTES = Pattern.compile("Minuten");
+    public static final Pattern MINUTES = Pattern.compile("Minute[n]?");
     public static final Pattern HOURS = Pattern.compile("Stunde");
-    public static final Pattern DAYS = Pattern.compile("Tage");
+    public static final Pattern DAYS = Pattern.compile("Tag[e]?");
     public static final Pattern SIZE_PRICE_SPLIT = Pattern.compile("m² |", Pattern.LITERAL);
     public static final Pattern ER = Pattern.compile("er");
     public static final Pattern W = Pattern.compile("w");
