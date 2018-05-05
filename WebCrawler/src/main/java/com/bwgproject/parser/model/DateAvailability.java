@@ -13,7 +13,7 @@ public class DateAvailability {
     private LocalDateTime availableTo;
 
     public boolean isLongTerm() {
-        return Objects.nonNull(availableTo);
+        return Objects.isNull(availableTo);
     }
 
 }
