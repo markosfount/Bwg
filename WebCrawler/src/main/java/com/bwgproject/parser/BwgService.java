@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class BwgService {
 
     private static final int MAX_CALLS = 10;
-    private static final int INTERVAL = 1;
+    private static final int INTERVAL = 30;
     private final BwgScraper scraper;
     private final ResponseParser parser;
     private final DataSerializer serializer;
