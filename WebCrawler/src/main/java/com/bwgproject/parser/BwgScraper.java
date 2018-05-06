@@ -1,5 +1,6 @@
 package com.bwgproject.parser;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -13,17 +14,21 @@ import java.io.IOException;
 
 @Component
 public class BwgScraper {
-    private static final String url = "http://www.wg-gesucht.de/wg-zimmer-in-Berlin.8.0.1.0.html";
+    private static final String url = "http://www.wg-gesucht.de/wg-zimmer-in-Berlin.8.0.1.%d.html";
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)";
 
 
     public String getResponse() {
+        return getResponse(0);
+    }
+
+    public String getResponse(int pageNum) {
         HttpClient client = HttpClientBuilder.create().build();
-        HttpGet getRequest = new HttpGet(url);
+        HttpGet getRequest = new HttpGet(formatUrl(pageNum));
         getRequest.addHeader("User-Agent", USER_AGENT);
 
+        System.out.println("Starting scraping");
         String response = null;
-        // add logging
         try {
             HttpResponse httpResponse = client.execute(getRequest);
             int status = httpResponse.getStatusLine().getStatusCode();
@@ -37,8 +42,12 @@ public class BwgScraper {
             e.printStackTrace();
         }
 
-//        System.out.println(response);
         return response;
+    }
+
+    @VisibleForTesting
+    public String formatUrl(int pageNum) {
+        return String.format(url, pageNum);
     }
 
 }

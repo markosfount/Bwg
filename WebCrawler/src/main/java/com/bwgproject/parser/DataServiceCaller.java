@@ -19,14 +19,24 @@ public class DataServiceCaller {
     private static final String DATA_SERVICE = "http://localhost:8080/dataService/addRecords";
     private final RestTemplate restTemplate;
 
-    public void sendRequest(String request) {
+    public void postResults(String request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         HttpEntity<String> requestEntity = new HttpEntity<>(request, headers);
 
+        System.out.println("Calling dataService to store results");
         ResponseEntity<String> response = restTemplate.postForEntity(URI.create(DATA_SERVICE), requestEntity, String.class);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Call to data service failed");
         }
     }
+
+//    public String getMostRecentRecord() {
+//        HttpEntity<String> requestEntity = new HttpEntity<>();
+//
+//        ResponseEntity<String> response = restTemplate.getForEntity(URI.create(DATA_SERVICE), requestEntity, String.class);
+//        if (response.getStatusCode() != HttpStatus.OK) {
+//            throw new RuntimeException("Call to data service failed");
+//        }
+//    }
 }

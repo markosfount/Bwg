@@ -10,11 +10,11 @@ public class DataServiceCallerTest {
 
     @Test
     public void shouldCallDataService() throws Exception {
-        dataServiceCaller.sendRequest(TestUtils.getDataRequest());
+        dataServiceCaller.postResults(TestUtils.getDataRequest());
     }
 
     @Test
     public void shouldCallDataServiceWithMiniRequest() throws Exception {
-        dataServiceCaller.sendRequest(TestUtils.getDataRequestMini());
+        dataServiceCaller.postResults(TestUtils.getDataRequestMini());
     }
 }
