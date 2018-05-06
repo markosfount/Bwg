@@ -25,6 +25,7 @@ import static com.bwgproject.parser.Constants.EURO;
 import static com.bwgproject.parser.Constants.HOURS;
 import static com.bwgproject.parser.Constants.ID;
 import static com.bwgproject.parser.Constants.INTERVAL_SPLIT;
+import static com.bwgproject.parser.Constants.INTERVAL_SPLIT_DASH;
 import static com.bwgproject.parser.Constants.LIST_DETAILS;
 import static com.bwgproject.parser.Constants.M;
 import static com.bwgproject.parser.Constants.MEN_NO;
@@ -111,9 +112,11 @@ public class ResultsMapper {
 
         if (MINUTES.matcher(timeOnline).find()) {
             return LocalDateTime.now().minusMinutes(amount);
-        } else if (HOURS.matcher(timeOnline).find()) {
+        }
+        if (HOURS.matcher(timeOnline).find()) {
             return LocalDateTime.now().minusHours(amount);
-        } else if (DAYS.matcher(timeOnline).find()) {
+        }
+        if (DAYS.matcher(timeOnline).find()) {
             return LocalDateTime.now().minusDays(amount);
         }
 
@@ -139,7 +142,7 @@ public class ResultsMapper {
         boolean isShortTerm = INTERVAL_SPLIT.matcher(textToSplit).find();
         String[] textParts = DATE_SPLIT_SHORT.split(textToSplit);
         String text = textParts[0];
-        String[] interval = INTERVAL_SPLIT.split(textParts[1]);
+        String[] interval = INTERVAL_SPLIT_DASH.split(textParts[1]);
 
         DateAvailability availability = DateAvailability.builder()
                 .availableFrom(isShortTerm ? getDateTimeFromString(interval[0]) : getDateTimeFromString(textParts[1]))

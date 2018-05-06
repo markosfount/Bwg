@@ -35,7 +35,7 @@ public final class TestUtils {
     }
 
     public static String getScrapedContent(String filename) throws Exception {
-        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response2.html").toURI())), Charset.defaultCharset());
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource(filename).toURI())), Charset.defaultCharset());
         return response;
     }
 

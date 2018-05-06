@@ -13,7 +13,8 @@ public final class Constants {
     public static final Pattern WOMEN_PAT = Pattern.compile("\\dw");
     public static final Pattern MEN_PAT = Pattern.compile("\\dm");
     public static final Pattern DATE_SPLIT_SHORT = Pattern.compile(" Verfügbar: ");
-    public static final Pattern INTERVAL_SPLIT = Pattern.compile(" - ");
+    public static final Pattern INTERVAL_SPLIT = Pattern.compile("\\d{2} - \\d{2}");//Pattern.compile(" - ");
+    public static final Pattern INTERVAL_SPLIT_DASH = Pattern.compile(" - ");
     public static final String ID = "id";
     public static final String SIZE_PRICE_WR = ".detail-size-price-wrapper";
     public static final String DETAIL_VIEW = ".detailansicht";

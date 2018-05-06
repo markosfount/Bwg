@@ -1,6 +1,9 @@
 package com.bwgproject.dataservice.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,9 +14,11 @@ import javax.persistence.Id;
 
 @Builder
 @Entity
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class WgResultEntity  implements Serializable {
 
-    // TODO add toString
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
