@@ -33,6 +33,7 @@ import static com.bwgproject.parser.Constants.MEN_PAT;
 import static com.bwgproject.parser.Constants.MINUTES;
 import static com.bwgproject.parser.Constants.NAME_TRAIL;
 import static com.bwgproject.parser.Constants.ONLINE;
+import static com.bwgproject.parser.Constants.SECONDS;
 import static com.bwgproject.parser.Constants.SIZE_PRICE_SPLIT;
 import static com.bwgproject.parser.Constants.SIZE_PRICE_WR;
 import static com.bwgproject.parser.Constants.TOTAL_NO;
@@ -110,6 +111,9 @@ public class ResultsMapper {
             amount = Long.valueOf(matcher.group());
         }
 
+        if (SECONDS.matcher(timeOnline).find()) {
+            return LocalDateTime.now().minusSeconds(amount);
+        }
         if (MINUTES.matcher(timeOnline).find()) {
             return LocalDateTime.now().minusMinutes(amount);
         }

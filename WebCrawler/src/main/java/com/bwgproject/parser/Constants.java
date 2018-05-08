@@ -21,6 +21,7 @@ public final class Constants {
     public static final String TOTAL_NO = "total";
     public static final String WOMEN_NO = "women";
     public static final String MEN_NO = "men";
+    public static final Pattern SECONDS = Pattern.compile("Sekunde[n]?");
     public static final Pattern MINUTES = Pattern.compile("Minute[n]?");
     public static final Pattern HOURS = Pattern.compile("Stunde");
     public static final Pattern DAYS = Pattern.compile("Tag[e]?");
