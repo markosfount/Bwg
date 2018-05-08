@@ -11,6 +11,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 public class BwgScraper {
@@ -27,7 +28,7 @@ public class BwgScraper {
         HttpGet getRequest = new HttpGet(formatUrl(pageNum));
         getRequest.addHeader("User-Agent", USER_AGENT);
 
-        System.out.println("Starting scraping");
+        System.out.println(String.format("%s Starting scraping", LocalDateTime.now()));
         String response = null;
         try {
             HttpResponse httpResponse = client.execute(getRequest);

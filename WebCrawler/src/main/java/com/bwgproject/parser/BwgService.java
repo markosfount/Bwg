@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class BwgService {
 
     private static final int MAX_CALLS = 10;
-    private static final int INTERVAL = 30;
+    private static final int INTERVAL = 20;
     private final BwgScraper scraper;
     private final ResponseParser parser;
     private final DataSerializer serializer;
@@ -28,11 +30,18 @@ public class BwgService {
 
     private Runnable runService() {
         return () -> {
-            List<WgResult> results = getResults();
+            try {
+                List<WgResult> results = getResults();
 
-            String request = mapToRequest(results);
+                String request = mapToRequest(results);
 
-            dataServiceCaller.postResults(request);
+                dataServiceCaller.postResults(request);
+            } catch (Throwable t) {
+                StringWriter sw = new StringWriter();
+                t.printStackTrace(new PrintWriter(sw));
+                System.out.println(sw.toString());
+            }
+
         };
     }
 

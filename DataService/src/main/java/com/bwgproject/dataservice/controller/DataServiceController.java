@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class DataServiceController {
     @PostMapping(path = "/addRecords", consumes = "application/json;charset=UTF-8"  )
     public List<WgResultEntity> insertData(@RequestBody WgResult... wgResults) {
         List<WgResultEntity> wgResultEntities = wgResultModelMapper.map(Arrays.asList(wgResults));
-        System.out.println("Persisting results");
+        System.out.println(String.format("%s Persisting results", LocalDateTime.now()));
 
         return wgResultRepository.save(wgResultEntities);
     }
