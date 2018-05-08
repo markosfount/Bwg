@@ -24,19 +24,19 @@ public class DataServiceController {
 
     private final WgResultModelMapper wgResultModelMapper;
 
-    @PostMapping(path = "/addRecords", consumes = "application/json;charset=UTF-8"  )
-    public List<WgResultEntity> insertData(@RequestBody WgResult... wgResults) {
-        List<WgResultEntity> wgResultEntities = wgResultModelMapper.map(Arrays.asList(wgResults));
+    @PostMapping(path = "/addRecords", consumes = "application/json;charset=UTF-8")
+    public List<WgResultEntity> insertData(@RequestBody List<WgResult> wgResults) {
+        List<WgResultEntity> wgResultEntities = wgResultModelMapper.map(wgResults);
         System.out.println(String.format("%s Persisting results", LocalDateTime.now()));
 
         return wgResultRepository.save(wgResultEntities);
     }
 
     @GetMapping(path = "/getMostRecent")
-    public List<WgResultEntity> getMostRecent() {
+    public WgResultEntity getMostRecent() {
         List<WgResultEntity> wgResultEntities = wgResultRepository.findFirstByOrderByDateOfPostingDesc();
 
-        return wgResultEntities;
+        return wgResultEntities.get(0);
     }
 
 }

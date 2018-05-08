@@ -1,5 +1,6 @@
 package com.bwgproject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WgResult implements Serializable {
     private String description;
     private String text;

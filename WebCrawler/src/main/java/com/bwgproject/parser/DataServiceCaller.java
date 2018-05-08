@@ -16,8 +16,11 @@ import java.net.URI;
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 public class DataServiceCaller {
 
-    private static final String DATA_SERVICE = "http://localhost:8080/dataService/addRecords";
+    private static final String DATA_SERVICE = "http://localhost:8080/dataService";
+    private static final String ADD_RECORDS_ENDPOINT = "/addRecords";
+    private static final String RETRIEVE_LATEST_ENDPOINT = "/getMostRecent";
     private final RestTemplate restTemplate;
+
 
     public void postResults(String request) {
         HttpHeaders headers = new HttpHeaders();
@@ -25,18 +28,18 @@ public class DataServiceCaller {
         HttpEntity<String> requestEntity = new HttpEntity<>(request, headers);
 
         System.out.println("Calling dataService to store results");
-        ResponseEntity<String> response = restTemplate.postForEntity(URI.create(DATA_SERVICE), requestEntity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(URI.create(DATA_SERVICE + ADD_RECORDS_ENDPOINT), requestEntity, String.class);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Call to data service failed");
         }
     }
 
-//    public String getMostRecentRecord() {
-//        HttpEntity<String> requestEntity = new HttpEntity<>();
-//
-//        ResponseEntity<String> response = restTemplate.getForEntity(URI.create(DATA_SERVICE), requestEntity, String.class);
-//        if (response.getStatusCode() != HttpStatus.OK) {
-//            throw new RuntimeException("Call to data service failed");
-//        }
-//    }
+    public String getMostRecentRecord() {
+        ResponseEntity<String> response = restTemplate.getForEntity(URI.create(DATA_SERVICE + RETRIEVE_LATEST_ENDPOINT), String.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Call to data service failed");
+        }
+
+        return response.getBody();
+    }
 }

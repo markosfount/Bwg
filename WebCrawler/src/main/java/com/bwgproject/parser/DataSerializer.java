@@ -1,5 +1,6 @@
 package com.bwgproject.parser;
 
+import com.bwgproject.model.WgResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,14 @@ public class DataSerializer {
         try {
             return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
+            throw new RuntimeException("Could not serialize data", e);
+        }
+    }
+
+    public WgResult deserialize(String json) {
+        try {
+            return objectMapper.readValue(json, WgResult.class);
+        } catch (Exception e) {
             throw new RuntimeException("Could not serialize data", e);
         }
     }
