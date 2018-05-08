@@ -35,6 +35,7 @@ public class DataServiceController {
     @GetMapping(path = "/getMostRecent")
     public WgResultEntity getMostRecent() {
         List<WgResultEntity> wgResultEntities = wgResultRepository.findFirstByOrderByDateOfPostingDesc();
+        System.out.println(String.format("%s Returned most recent element", LocalDateTime.now()));
 
         return wgResultEntities.get(0);
     }
