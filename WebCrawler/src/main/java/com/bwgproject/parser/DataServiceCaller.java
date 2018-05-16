@@ -1,6 +1,7 @@
 package com.bwgproject.parser;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 public class DataServiceCaller {
@@ -19,6 +21,7 @@ public class DataServiceCaller {
     private static final String DATA_SERVICE = "http://localhost:8080/dataService";
     private static final String ADD_RECORDS_ENDPOINT = "/addRecords";
     private static final String RETRIEVE_LATEST_ENDPOINT = "/getMostRecent";
+
     private final RestTemplate restTemplate;
 
 
@@ -27,7 +30,7 @@ public class DataServiceCaller {
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         HttpEntity<String> requestEntity = new HttpEntity<>(request, headers);
 
-        System.out.println("Calling dataService to store results");
+        log.info("Calling dataService to store results");
         ResponseEntity<String> response = restTemplate.postForEntity(URI.create(DATA_SERVICE + ADD_RECORDS_ENDPOINT), requestEntity, String.class);
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Call to data service failed");

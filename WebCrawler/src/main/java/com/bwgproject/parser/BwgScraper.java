@@ -1,6 +1,7 @@
 package com.bwgproject.parser;
 
 import com.google.common.annotations.VisibleForTesting;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -11,8 +12,8 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
+@Slf4j
 @Component
 public class BwgScraper {
     private static final String url = "http://www.wg-gesucht.de/wg-zimmer-in-Berlin.8.0.1.%d.html";
@@ -28,7 +29,7 @@ public class BwgScraper {
         HttpGet getRequest = new HttpGet(formatUrl(pageNum));
         getRequest.addHeader("User-Agent", USER_AGENT);
 
-        System.out.println(String.format("%s Starting scraping", LocalDateTime.now()));
+        log.info("Starting scraping");
         String response = null;
         try {
             HttpResponse httpResponse = client.execute(getRequest);

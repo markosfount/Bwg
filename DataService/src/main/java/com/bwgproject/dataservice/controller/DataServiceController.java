@@ -5,16 +5,16 @@ import com.bwgproject.dataservice.WgResultRepository;
 import com.bwgproject.dataservice.model.WgResultEntity;
 import com.bwgproject.model.WgResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/dataService")
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class DataServiceController {
         List<WgResultEntity> wgResultEntities = wgResultModelMapper.map(wgResults);
 
         List<WgResultEntity> storedEntities = wgResultRepository.save(wgResultEntities);
-        System.out.println(String.format("%s Persisting %s results", LocalDateTime.now(), storedEntities.size()));
+        log.info("Persisting {} results", storedEntities.size());
 
         return storedEntities;
     }
@@ -37,7 +37,7 @@ public class DataServiceController {
     @GetMapping(path = "/getMostRecent")
     public WgResultEntity getMostRecent() {
         List<WgResultEntity> wgResultEntities = wgResultRepository.findFirstByOrderByDateOfPostingDesc();
-        System.out.println(String.format("%s Returned most recent element", LocalDateTime.now()));
+        log.info("Returned most recent element");
 
         return wgResultEntities.get(0);
     }

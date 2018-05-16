@@ -2,11 +2,11 @@ package com.bwgproject.parser;
 
 import com.bwgproject.model.WgResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 public class BwgService {
@@ -35,7 +36,6 @@ public class BwgService {
     private Runnable runService() {
         return () -> {
             try {
-
                 LocalDateTime dateOfLastRecord = getDateTimeOfLastRecord();
 
                 List<WgResult> results = getResults(dateOfLastRecord);
@@ -44,9 +44,7 @@ public class BwgService {
 
                 dataServiceCaller.postResults(request);
             } catch (Throwable t) {
-                StringWriter sw = new StringWriter();
-                t.printStackTrace(new PrintWriter(sw));
-                System.out.println(sw.toString());
+                log.error("{}", ExceptionUtils.getStackTrace(t));
             }
 
         };
@@ -54,9 +52,8 @@ public class BwgService {
 
     private LocalDateTime getDateTimeOfLastRecord() {
         String response = dataServiceCaller.getMostRecentRecord();
-        LocalDateTime dateOfPosting = serializer.deserialize(response).getDateOfPosting();
 
-        return dateOfPosting;
+        return serializer.deserialize(response).getDateOfPosting();
     }
 
     private List<WgResult> getResults(LocalDateTime dateOfLastRecord) {
@@ -72,7 +69,7 @@ public class BwgService {
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("Exception while scraping {}", e);
             }
         }
 
@@ -90,8 +87,7 @@ public class BwgService {
     }
 
     private String mapToRequest(List<WgResult> results) {
-        String request = serializer.serialize(results);
-        return request;
+        return serializer.serialize(results);
     }
 
 
