@@ -23,6 +23,7 @@ public class BwgService {
     private static final int MAX_CALLS = 5;
     private static final int INTERVAL = 20;
     private static final double MAGIC_NUMBER = 2.5;
+    private static final long SAFE_MINUTES = Math.round(MAGIC_NUMBER * INTERVAL);
     private final BwgScraper scraper;
     private final ResponseParser parser;
     private final DataSerializer serializer;
@@ -52,8 +53,12 @@ public class BwgService {
 
     private LocalDateTime getDateTimeOfLastRecord() {
         String response = dataServiceCaller.getMostRecentRecord();
+        if (response.isEmpty()) {
+            return LocalDateTime.now().minusHours(2);
+        }
+        WgResult wgResult = serializer.deserialize(response);
 
-        return serializer.deserialize(response).getDateOfPosting();
+        return wgResult.getDateOfPosting();
     }
 
     private List<WgResult> getResults(LocalDateTime dateOfLastRecord) {
@@ -83,7 +88,7 @@ public class BwgService {
 
     private Predicate<WgResult> datePredicate(LocalDateTime dateOfLastRecord) {
         return wgResult -> wgResult.getDateOfPosting()
-                .isBefore(dateOfLastRecord.minusMinutes(Math.round(MAGIC_NUMBER * INTERVAL)));
+                .isBefore(dateOfLastRecord.minusMinutes(SAFE_MINUTES));
     }
 
     private String mapToRequest(List<WgResult> results) {

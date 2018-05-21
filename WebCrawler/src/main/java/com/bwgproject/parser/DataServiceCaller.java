@@ -39,6 +39,9 @@ public class DataServiceCaller {
 
     public String getMostRecentRecord() {
         ResponseEntity<String> response = restTemplate.getForEntity(URI.create(DATA_SERVICE + RETRIEVE_LATEST_ENDPOINT), String.class);
+        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+            return "";
+        }
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Call to data service failed");
         }
