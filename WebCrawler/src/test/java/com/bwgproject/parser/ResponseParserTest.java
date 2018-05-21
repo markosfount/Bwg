@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNull.notNullValue;
+
 class ResponseParserTest {
 
     private ResponseParser responseParser = new ResponseParser(new ResultsMapper());
@@ -15,6 +18,8 @@ class ResponseParserTest {
 
         String response = TestUtils.getScrapedContent();
         List<WgResult> wgResults = responseParser.parseResponse(response);
+
+        assertThat(wgResults, notNullValue());
     }
 
     @Test
@@ -22,6 +27,8 @@ class ResponseParserTest {
 
         String response = TestUtils.getScrapedContent("response_test_new.html");
         List<WgResult> wgResults = responseParser.parseResponse(response);
+
+        assertThat(wgResults, notNullValue());
     }
 
 }

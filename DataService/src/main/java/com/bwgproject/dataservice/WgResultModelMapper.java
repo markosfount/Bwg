@@ -31,6 +31,7 @@ public class WgResultModelMapper {
                 .text(wgResult.getText())
                 .description(wgResult.getDescription())
                 .extId(wgResult.getExtId())
+                .prefGender(wgResult.getPrefGender())
                 .build();
     }
 }

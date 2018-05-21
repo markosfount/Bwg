@@ -24,4 +24,5 @@ public class WgResult implements Serializable {
     private Integer women;
     private Integer men;
     private String location;
+    private PreferredGender prefGender;
 }

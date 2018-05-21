@@ -1,8 +1,10 @@
 package com.bwgproject.parser;
 
+import com.bwgproject.model.PreferredGender;
 import com.bwgproject.model.WgResult;
 import com.bwgproject.parser.model.DateAvailability;
 import com.google.common.annotations.VisibleForTesting;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
@@ -14,24 +16,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import static com.bwgproject.parser.Constants.ALT;
 import static com.bwgproject.parser.Constants.ANINT;
+import static com.bwgproject.parser.Constants.ANY;
 import static com.bwgproject.parser.Constants.BERLIN;
+import static com.bwgproject.parser.Constants.CLASS;
 import static com.bwgproject.parser.Constants.DATE_SPLIT_SHORT;
 import static com.bwgproject.parser.Constants.DAYS;
 import static com.bwgproject.parser.Constants.DETAIL_VIEW;
 import static com.bwgproject.parser.Constants.DOT;
 import static com.bwgproject.parser.Constants.ER;
 import static com.bwgproject.parser.Constants.EURO;
+import static com.bwgproject.parser.Constants.FEMALE;
 import static com.bwgproject.parser.Constants.HOURS;
+import static com.bwgproject.parser.Constants.HREF;
 import static com.bwgproject.parser.Constants.ID;
 import static com.bwgproject.parser.Constants.INTERVAL_SPLIT;
 import static com.bwgproject.parser.Constants.INTERVAL_SPLIT_DASH;
 import static com.bwgproject.parser.Constants.LIST_DETAILS;
 import static com.bwgproject.parser.Constants.M;
+import static com.bwgproject.parser.Constants.MALE;
 import static com.bwgproject.parser.Constants.MEN_NO;
 import static com.bwgproject.parser.Constants.MEN_PAT;
 import static com.bwgproject.parser.Constants.MINUTES;
 import static com.bwgproject.parser.Constants.NAME_TRAIL;
+import static com.bwgproject.parser.Constants.NO_PRINT;
 import static com.bwgproject.parser.Constants.ONLINE;
 import static com.bwgproject.parser.Constants.SECONDS;
 import static com.bwgproject.parser.Constants.SIZE_PRICE_SPLIT;
@@ -41,6 +50,7 @@ import static com.bwgproject.parser.Constants.W;
 import static com.bwgproject.parser.Constants.WOMEN_NO;
 import static com.bwgproject.parser.Constants.WOMEN_PAT;
 
+@Slf4j
 @Component
 public class ResultsMapper {
 
@@ -49,12 +59,11 @@ public class ResultsMapper {
 
         Element details = getDetails(element);
         String location = getLocation(details);
-
         String[] sizeAndPrice = getSizePrice(details);
+        PreferredGender preferredGender = getPreferredGender(details);
+
         Map<String, Integer> flatMateInfo = getFlatmateInfo(element);
-
         LocalDateTime dateOfPosting = getDateOfPosting(element);
-
         String description = getDescription(element);
 
         Pair<String, DateAvailability> availabilityPair = parseDatesAvailable(element);
@@ -70,6 +79,7 @@ public class ResultsMapper {
                 .isLongTerm(availabilityPair.getRight().isLongTerm())
                 .size(getSize(sizeAndPrice))
                 .price(getPrice(sizeAndPrice))
+                .prefGender(preferredGender)
                 .flatmates(flatMateInfo.get(TOTAL_NO))
                 .women(flatMateInfo.get(WOMEN_NO))
                 .men(flatMateInfo.get(MEN_NO))
@@ -77,6 +87,22 @@ public class ResultsMapper {
                 .build();
 
         return wgResult;
+    }
+
+    private PreferredGender getPreferredGender(Element details) {
+        String text = details.getElementsByAttributeValue(CLASS, NO_PRINT).attr(ALT);
+        if (ANY.matcher(text).find()) {
+            return PreferredGender.any;
+        }
+        if (FEMALE.matcher(text).find()) {
+            return PreferredGender.female;
+        }
+        if (MALE.matcher(text).find()) {
+            return PreferredGender.male;
+        }
+        log.error("No preference for flatmate gender was found. Result will be persisted with NULL instead");
+
+        return null;
     }
 
     private Element getDetails(Element element) {
@@ -161,7 +187,7 @@ public class ResultsMapper {
     }
 
     private String getLocation(Element element) {
-        return BERLIN.matcher(NAME_TRAIL.matcher(element.attr("href")).replaceAll("")).replaceAll("");
+        return BERLIN.matcher(NAME_TRAIL.matcher(element.attr(HREF)).replaceAll("")).replaceAll("");
     }
 
     private Double getSize(String... sizeAndPrice) {

@@ -21,6 +21,13 @@ public final class Constants {
     public static final String TOTAL_NO = "total";
     public static final String WOMEN_NO = "women";
     public static final String MEN_NO = "men";
+    public static final String CLASS = "class";
+    public static final String NO_PRINT = "vis noprint";
+    public static final String ALT = "alt";
+    public static final String HREF = "href";
+    public static final Pattern ANY = Pattern.compile(" oder ");
+    public static final Pattern FEMALE = Pattern.compile("Mitbewohnerin");
+    public static final Pattern MALE = Pattern.compile("Mitb[e]wohner");
     public static final Pattern SECONDS = Pattern.compile("Sekunde[n]?");
     public static final Pattern MINUTES = Pattern.compile("Minute[n]?");
     public static final Pattern HOURS = Pattern.compile("Stunde");
