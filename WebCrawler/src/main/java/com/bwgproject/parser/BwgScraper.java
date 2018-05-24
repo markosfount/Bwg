@@ -35,7 +35,7 @@ public class BwgScraper {
             HttpResponse httpResponse = client.execute(getRequest);
             int status = httpResponse.getStatusLine().getStatusCode();
             if (status != HttpStatus.SC_OK) {
-                throw new RuntimeException(String.format("Bad status: /d", status));
+                throw new RuntimeException(String.format("Bad status: %d", status));
             }
             HttpEntity entity = httpResponse.getEntity();
             response = EntityUtils.toString(entity);
