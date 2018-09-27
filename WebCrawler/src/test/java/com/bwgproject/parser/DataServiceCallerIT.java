@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-public class DataServiceCallerTest {
+public class DataServiceCallerIT {
 
     private DataServiceCaller dataServiceCaller = new DataServiceCaller(new RestTemplate());
 
