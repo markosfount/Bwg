@@ -13,7 +13,6 @@ public class DataServiceCallerIT {
     private DataServiceCaller dataServiceCaller = new DataServiceCaller(new RestTemplate());
 
     @Test
-    @Ignore
     public void shouldPostResults() throws Exception {
         dataServiceCaller.postResults(TestUtils.getDataRequest());
     }
