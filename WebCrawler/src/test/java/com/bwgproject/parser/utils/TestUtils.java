@@ -16,7 +16,7 @@ import java.util.List;
 public final class TestUtils {
 
     public static List<Element> getElements() throws Exception {
-        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response2.html").toURI())));
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response_mini.html").toURI())));
         Document document = Jsoup.parse(response);
         return document.select("div[id~=liste-details-ad-\\d+]");
 
@@ -30,7 +30,7 @@ public final class TestUtils {
     }
 
     public static String getScrapedContent() throws Exception {
-        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response2.html").toURI())), Charset.defaultCharset());
+        String response = new String(Files.readAllBytes(Paths.get(TestUtils.class.getClassLoader().getResource("response_mini.html").toURI())), Charset.defaultCharset());
         return response;
     }
 
