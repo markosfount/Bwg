@@ -32,9 +32,9 @@
         </plugins>
     </build>
     <modules>
-        <module>DataService</module>
-        <module>WebCrawler</module>
-        <module>BwgCommons</module>
+        <module>dataService</module>
+        <module>webCrawler</module>
+        <module>bwgCommons</module>
     </modules>
 
     <dependencies>
